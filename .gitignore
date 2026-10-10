@@ -1,0 +1,25 @@
+# private data — never commit
+private/*
+!private/seed.example.json
+!private/README.md
+data/
+*.db
+*.db-journal
+.env
+.env.*
+!.env.example
+backups/
+
+# build
+node_modules/
+.next/
+out/
+coverage/
+playwright-report/
+test-results/
+*.tsbuildinfo
+next-env.d.ts
+.DS_Store
+
+# deploy
+.vercel/

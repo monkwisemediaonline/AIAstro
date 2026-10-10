@@ -1,0 +1,25 @@
+{
+  "_note": "Synthetic example showing the format. Copy to seed.local.json and replace with real data.",
+  "people": [
+    {
+      "displayName": "Test Person A",
+      "relationship": "self",
+      "birthDate": "1990-06-15",
+      "birthTime": { "kind": "exact", "local": "10:20" },
+      "birthTimeConfidence": "exact",
+      "place": { "query": "New Delhi, India", "ianaTz": "Asia/Kolkata" },
+      "names": [{ "name": "Test Person A", "script": "Latn", "usage": "primary" }],
+      "notes": ""
+    },
+    {
+      "displayName": "Test Person B",
+      "relationship": "spouse",
+      "birthDate": "1992-03-01",
+      "birthTime": { "kind": "range", "from": "18:00", "to": "18:45" },
+      "birthTimeConfidence": "approximate",
+      "place": { "query": "Mumbai, India", "ianaTz": "Asia/Kolkata" },
+      "names": [{ "name": "Test Person B", "script": "Latn", "usage": "primary" }],
+      "notes": ""
+    }
+  ]
+}
