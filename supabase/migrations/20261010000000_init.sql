@@ -95,3 +95,7 @@ end $$;
 
 -- anon role gets nothing
 revoke all on public.app_owner, public.people, public.chart_results, public.partner_checks from anon;
+
+-- signed-in users get table access; RLS above still limits rows to the owner
+grant select, insert, update, delete on public.people, public.chart_results, public.partner_checks to authenticated;
+grant select on public.app_owner to authenticated;
