@@ -77,6 +77,7 @@ export function buildAiContext(chart: ChartResult, yogas: YogaResult[], birthDat
         name: y.name,
         category: y.category,
         status: y.status,
+        source_status: y.verification,
         very_common: y.common,
         themes: y.themes,
         conditions: y.conditions.map((c) => `${c.met ? "MET" : "NOT MET"}: ${c.text}`),
@@ -106,7 +107,7 @@ export function buildAiContext(chart: ChartResult, yogas: YogaResult[], birthDat
       gemstone: { ref: `remedy:${a.planet}-gemstone`, stone: PLANET_REMEDY[a.planet].stone, reading: a.role, cautions: a.cautions },
     })),
     caveats: [
-      "All yoga rules are unverified drafts awaiting source review.",
+      "Each yoga carries source_status: 'unverified' rules are drafts awaiting source review, 'disputed' rules are contested by the owner; say so when you rely on one.",
       "Remedies are common-tradition starter entries, not source-verified.",
       "Strength scores are a product heuristic, not a classical measure.",
     ],

@@ -7,7 +7,9 @@ import { formatDms } from "@/engine/math";
 import { saturnPhases, signStays, transitsAt } from "@/engine/transits";
 import { evaluateForBirth } from "@/rules/evaluate";
 import { describeTime, RELATIONSHIPS, toBirthInput, type Person } from "@/lib/people";
+import { loadReviewIndex } from "@/lib/library-store";
 import { getStore } from "@/lib/store";
+import { applyReviews, type ReviewIndex } from "@/library/reviews";
 
 const YEAR = 365.25 * 86_400_000;
 
@@ -56,6 +58,7 @@ async function Content({ searchParams }: { searchParams: PageProps<"/timeline">[
   const now = new Date();
   const picked = typeof sp.d === "string" && /^\d{4}-\d{2}-\d{2}$/.test(sp.d) ? new Date(`${sp.d}T12:00:00Z`) : null;
   const at = picked && !Number.isNaN(picked.getTime()) ? picked : now;
+  const reviews = await loadReviewIndex();
 
   return (
     <div className="space-y-6">
@@ -77,7 +80,7 @@ async function Content({ searchParams }: { searchParams: PageProps<"/timeline">[
         <button className="btn btn-primary">Show</button>
       </form>
       {toBirthInput(person) ? (
-        <Report person={person} now={now} at={at} isToday={!picked} />
+        <Report person={person} now={now} at={at} isToday={!picked} reviews={reviews} />
       ) : (
         <p className="card p-5 text-sm">
           Birth details for {person.display_name} are incomplete.{" "}
@@ -88,7 +91,7 @@ async function Content({ searchParams }: { searchParams: PageProps<"/timeline">[
   );
 }
 
-function Report({ person, now, at, isToday }: { person: Person; now: Date; at: Date; isToday: boolean }) {
+function Report({ person, now, at, isToday, reviews }: { person: Person; now: Date; at: Date; isToday: boolean; reviews: ReviewIndex }) {
   const input = toBirthInput(person)!;
   const chart = computeChart(input, at);
   const tz = chart.input.ianaTz;
@@ -104,7 +107,7 @@ function Report({ person, now, at, isToday }: { person: Person; now: Date; at: D
     .filter((a) => a.start > atIso)
     .slice(0, 6);
 
-  const yogas = evaluateForBirth(input).results.filter((r) => r.status === "detected" && r.category !== "caution");
+  const yogas = applyReviews(evaluateForBirth(input).results, reviews).results.filter((r) => r.status === "detected" && r.category !== "caution");
   const yogasOf = (lord: Planet) => yogas.filter((y) => y.instances.some((i) => i.planets.includes(lord))).map((y) => y.name);
 
   const moon = chart.chart.planets.find((p) => p.planet === "Moon")!;

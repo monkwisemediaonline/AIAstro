@@ -5,7 +5,9 @@ import { aiConfigured, askAssistant, type AskResult } from "@/ai/ask";
 import { buildAiContext } from "@/ai/context";
 import { computeChart } from "@/engine/chart";
 import { toBirthInput } from "@/lib/people";
+import { loadReviewIndex } from "@/lib/library-store";
 import { getStore } from "@/lib/store";
+import { applyReviews } from "@/library/reviews";
 import { evaluateForBirth } from "@/rules/evaluate";
 
 export type AssistantState = { question: string; result: AskResult } | null;
@@ -32,6 +34,8 @@ export async function askAssistantAction(_prev: AssistantState, fd: FormData): P
 
   const now = new Date();
   const chart = computeChart(input, now);
-  const ai = buildAiContext(chart, evaluateForBirth(input).results, input.birthDate, now);
+  // Rules the owner switched off in the Research Library never reach the model.
+  const yogas = applyReviews(evaluateForBirth(input).results, await loadReviewIndex()).results;
+  const ai = buildAiContext(chart, yogas, input.birthDate, now);
   return { question, result: await askAssistant(ai, question) };
 }

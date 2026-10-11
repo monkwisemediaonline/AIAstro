@@ -10,7 +10,9 @@ import { transitsAt } from "@/engine/transits";
 import { getBusinessStore, type Goal, type Metric, type Retro } from "@/lib/business-store";
 import { RELATIONSHIPS, toBirthInput, type Person } from "@/lib/people";
 import { SetupNeeded } from "@/lib/remedy-store";
+import { loadReviewIndex } from "@/lib/library-store";
 import { getStore } from "@/lib/store";
+import { applyReviews, type ReviewIndex } from "@/library/reviews";
 import { HOUSE_FOCUS } from "@/rules/actions";
 import { DIGNITY_PHRASE } from "@/rules/context";
 import { evaluateForBirth } from "@/rules/evaluate";
@@ -41,6 +43,7 @@ async function Content({ searchParams }: { searchParams: PageProps<"/business">[
   const people = await store.listPeople();
   const person = people.find((p) => p.id === sp.p) ?? people.find((p) => p.relationship === "self") ?? people[0] ?? null;
   const now = new Date();
+  const reviews = await loadReviewIndex();
 
   let tracker: { metrics: Metric[]; goals: Goal[]; retros: Retro[] } | null = null;
   try {
@@ -70,7 +73,7 @@ async function Content({ searchParams }: { searchParams: PageProps<"/business">[
       )}
 
       {person && toBirthInput(person) ? (
-        <Traditional person={person} now={now} />
+        <Traditional person={person} now={now} reviews={reviews} />
       ) : (
         <p className="card p-5 text-sm">
           {person ? `Birth details for ${person.display_name} are incomplete. ` : "Add birth details to see the chart indicators. "}
@@ -102,11 +105,11 @@ async function Content({ searchParams }: { searchParams: PageProps<"/business">[
 
 // ------------------------------------------------------------ Traditional indicators
 
-function Traditional({ person, now }: { person: Person; now: Date }) {
+function Traditional({ person, now, reviews }: { person: Person; now: Date; reviews: ReviewIndex }) {
   const input = toBirthInput(person)!;
   const chart = computeChart(input, now);
   const lagnaSettled = !!chart.chart.ascendant && !(chart.sensitivity?.some((r) => r.item === "Ascendant (Lagna) sign" && !r.stable) ?? false);
-  const w: WealthIndicators = wealthIndicators(chart, evaluateForBirth(input).results, now, lagnaSettled);
+  const w: WealthIndicators = wealthIndicators(chart, applyReviews(evaluateForBirth(input).results, reviews).results, now, lagnaSettled);
   const tz = chart.input.ianaTz;
   const fmt = (iso: string) => new Intl.DateTimeFormat("en-IN", { month: "short", year: "numeric", timeZone: tz }).format(new Date(iso));
   const moon = chart.chart.planets.find((p) => p.planet === "Moon")!;
@@ -116,7 +119,7 @@ function Traditional({ person, now }: { person: Person; now: Date }) {
     <section className="space-y-4">
       <div>
         <h2 className="font-display text-2xl font-semibold">What the chart traditionally indicates</h2>
-        <p className="text-sm text-muted">{person.display_name} · Parashari, whole-sign houses · rules are drafts awaiting source verification</p>
+        <p className="text-sm text-muted">{person.display_name} · Parashari, whole-sign houses · rule status follows your Research Library</p>
       </div>
 
       {!lagnaSettled && (

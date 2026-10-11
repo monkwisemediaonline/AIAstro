@@ -51,7 +51,10 @@ export type YogaResult = {
   definition: string;
   source: string;
   themes: string;
-  verification: "unverified";
+  /** Draft until the owner reviews the rule in the Research Library. */
+  verification: "unverified" | "verified" | "disputed";
+  /** The owner's note from the Library review, if any. */
+  reviewNote?: string | null;
   common: boolean;
   productIndicator: boolean;
   status: YogaStatus;

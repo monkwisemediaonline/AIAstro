@@ -14,11 +14,10 @@ const LIVE = [
   { href: "/remedies", label: "Remedies & Rituals" },
   { href: "/partner", label: "Partner Vibes" },
   { href: "/assistant", label: "AI Assistant" },
+  { href: "/library", label: "Research Library" },
 ];
 
-const SOON = [
-  "Research Library",
-];
+const SOON: string[] = [];
 
 export function Nav({ people }: { people: { id: string; name: string }[] }) {
   const path = usePathname();
@@ -57,14 +56,18 @@ export function Nav({ people }: { people: { id: string; name: string }[] }) {
         </>
       )}
 
-      <p className="mt-6 hidden px-3 text-[11px] font-semibold uppercase tracking-[0.14em] text-[#8f8670] lg:block">Coming next</p>
-      <ul className="mt-2 hidden space-y-0.5 lg:block">
-        {SOON.map((s) => (
-          <li key={s} className="flex items-center justify-between rounded-lg px-3 py-1.5 text-[#7f7a6c]">
-            {s}
-          </li>
-        ))}
-      </ul>
+      {SOON.length > 0 && (
+        <>
+          <p className="mt-6 hidden px-3 text-[11px] font-semibold uppercase tracking-[0.14em] text-[#8f8670] lg:block">Coming next</p>
+          <ul className="mt-2 hidden space-y-0.5 lg:block">
+            {SOON.map((s) => (
+              <li key={s} className="flex items-center justify-between rounded-lg px-3 py-1.5 text-[#7f7a6c]">
+                {s}
+              </li>
+            ))}
+          </ul>
+        </>
+      )}
     </nav>
   );
 }

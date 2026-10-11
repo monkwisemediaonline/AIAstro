@@ -22,6 +22,8 @@ Next.js 16 · Supabase (Postgres + Auth, owner-only RLS) · Vercel.
   (monthly revenue, margin, cash, pipeline), goals, and a retrospective log of indicated vs actual.
 - **AI Assistant** — Claude explains already-computed results in a fixed structure; per-person opt-in,
   no name/date/place sent, every answer fact-checked against the chart before display.
+- **Research Library** — register of source books and a review for every yoga rule and remedy entry
+  (draft / verified with citation / disputed / switched off); the other pages follow these statuses.
 - **Numerology** — Chaldean, Pythagorean and Indian (Mulank, Bhagyank, Lo Shu, personal year); phone and
   other numbers; a name-change lab. Every letter value and step is shown.
 - **Remedies & Rituals** — per-planet starter practices (free first), gemstone reasoning by lordship,
@@ -29,7 +31,8 @@ Next.js 16 · Supabase (Postgres + Auth, owner-only RLS) · Vercel.
 - **Partner Vibes** — business-partner comparison, seven factors each labelled by basis.
 - Owner-only login (Supabase), no public sign-up.
 
-Planned next (see `docs/IMPLEMENTATION_PLAN.md`): research library for verifying rules against sources.
+All planned modules are built. Remaining work is content: verifying rules in the Research Library and
+entering Lal Kitab notes from a chosen edition.
 
 ## Run locally
 ```bash

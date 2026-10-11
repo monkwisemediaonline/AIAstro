@@ -7,7 +7,9 @@ import { evaluateForBirth } from "@/rules/evaluate";
 import { STRENGTH_RUBRIC } from "@/rules/strength";
 import type { Instance, YogaCategory, YogaResult, YogaStatus } from "@/rules/types";
 import { describeTime, RELATIONSHIPS, toBirthInput, type Person } from "@/lib/people";
+import { loadReviewIndex } from "@/lib/library-store";
 import { getStore } from "@/lib/store";
+import { applyReviews, type ReviewIndex } from "@/library/reviews";
 
 const STATUS: Record<YogaStatus, { label: string; cls: string }> = {
   detected: { label: "Present", cls: "bg-ok-soft text-ok" },
@@ -63,6 +65,7 @@ async function YogaContent({ searchParams }: { searchParams: PageProps<"/yoga">[
   }
   const person = people.find((p) => p.id === sp.p) ?? people.find((p) => p.relationship === "self") ?? people[0];
   const input = toBirthInput(person);
+  const reviews = await loadReviewIndex();
 
   return (
     <div className="space-y-6">
@@ -81,7 +84,7 @@ async function YogaContent({ searchParams }: { searchParams: PageProps<"/yoga">[
       </form>
 
       {input ? (
-        <Report person={person} now={new Date()} />
+        <Report person={person} now={new Date()} reviews={reviews} />
       ) : (
         <div className="card p-5 text-sm">
           <p className="font-semibold">Birth details incomplete for {person.display_name}</p>
@@ -95,10 +98,14 @@ async function YogaContent({ searchParams }: { searchParams: PageProps<"/yoga">[
   );
 }
 
-function Report({ person, now }: { person: Person; now: Date }) {
+function Report({ person, now, reviews }: { person: Person; now: Date; reviews: ReviewIndex }) {
   const input = toBirthInput(person)!;
   const chart = computeChart(input, now);
-  const report = evaluateForBirth(input);
+  const raw = evaluateForBirth(input);
+  const applied = applyReviews(raw.results, reviews);
+  const report = { ...raw, results: applied.results };
+  const verified = report.results.filter((r) => r.verification === "verified").length;
+  const drafts = report.results.filter((r) => r.verification === "unverified").length;
   const count = (cat: YogaCategory | null, st: YogaStatus) => report.results.filter((r) => (cat ? r.category === cat : true) && r.status === st).length;
 
   return (
@@ -126,9 +133,9 @@ function Report({ person, now }: { person: Person; now: Date }) {
           </p>
         )}
         <div className="px-5 py-3 text-xs text-ink-soft">
-          <b>How to read this.</b> A yoga being present is a traditional indication, not a guarantee of results. All {report.results.length} rules are
-          <b> drafts awaiting source verification</b> — check each against your own edition of the text before relying on it. Very common yogas and
-          product groupings are labelled.
+          <b>How to read this.</b> A yoga being present is a traditional indication, not a guarantee of results. <b>{verified}</b> of {report.results.length} rules are verified against a source and <b>{drafts} are still drafts</b>
+          {applied.disabled > 0 ? `; ${applied.disabled} switched off and hidden` : ""}. Review them in the{" "}
+          <Link href="/library" className="font-semibold text-gold underline-offset-4 hover:underline">Research Library</Link>. Very common yogas and product groupings are labelled.
         </div>
       </section>
 
@@ -191,6 +198,9 @@ function YogaCard({ r, chart, now, personId, compact }: { r: YogaResult; chart: 
           </p>
         </div>
         <div className="flex flex-wrap gap-1.5">
+          <span className={`chip ${r.verification === "verified" ? "bg-ok-soft text-ok" : r.verification === "disputed" ? "bg-warn-soft text-warn" : "bg-surface-2 text-muted"}`}>
+            {r.verification === "verified" ? "Verified" : r.verification === "disputed" ? "Disputed" : "Draft rule"}
+          </span>
           {r.common && <span className="chip bg-surface-2 text-ink-soft">Very common</span>}
           {r.productIndicator && <span className="chip bg-surface-2 text-ink-soft">Product indicator</span>}
           <span className={`chip ${st.cls}`}>{st.label}</span>
@@ -228,7 +238,8 @@ function YogaCard({ r, chart, now, personId, compact }: { r: YogaResult; chart: 
       <details className="mt-3 text-xs text-muted">
         <summary className="cursor-pointer">Rule and source</summary>
         <p className="mt-1">{r.definition}</p>
-        <p className="mt-1">Source to verify: {r.source}</p>
+        <p className="mt-1">{r.verification === "unverified" ? "Source to verify" : "Your citation"}: {r.source}</p>
+        {r.reviewNote && <p className="mt-1">Your note: {r.reviewNote}</p>}
       </details>
     </article>
   );

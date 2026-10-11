@@ -6,7 +6,9 @@ import { computeChart } from "@/engine/chart";
 import { PLANETS } from "@/engine/constants";
 import { RELATIONSHIPS, toBirthInput, type Person } from "@/lib/people";
 import { getRemedyStore, SetupNeeded, type Daan, type Practice } from "@/lib/remedy-store";
+import { loadReviewIndex } from "@/lib/library-store";
 import { getStore } from "@/lib/store";
+import type { ReviewIndex } from "@/library/reviews";
 import { ATTRIBUTION, GENERAL_SAFETY, PLANET_REMEDY, REMEDY_CATALOGUE, SAFETY_TEXT, starterRemedies } from "@/remedies/catalogue";
 import { assessPlanets, GEMSTONE_RULES, GEMSTONE_WARNINGS, type PlanetAssessment, type StoneRole } from "@/remedies/gemstones";
 import { makeCtx } from "@/rules/context";
@@ -54,6 +56,7 @@ async function Content({ searchParams }: { searchParams: PageProps<"/remedies">[
   const now = new Date();
   const today = now.toISOString().slice(0, 10);
   const monthStart = `${today.slice(0, 7)}-01`;
+  const reviews = await loadReviewIndex();
 
   let tracking: { practices: Practice[]; daan: Daan[]; cap: number | null } | null = null;
   try {
@@ -95,7 +98,7 @@ async function Content({ searchParams }: { searchParams: PageProps<"/remedies">[
       {tracking && <PracticesSection practices={tracking.practices} people={people} today={today} />}
       {tracking && <DaanSection daan={tracking.daan} cap={tracking.cap} today={today} />}
 
-      {person ? <PlanetSection person={person} now={now} canTrack={!!tracking} /> : <p className="text-sm text-muted">Add birth details to see what applies to a chart.</p>}
+      {person ? <PlanetSection person={person} now={now} canTrack={!!tracking} reviews={reviews} /> : <p className="text-sm text-muted">Add birth details to see what applies to a chart.</p>}
 
       <footer className="rounded-xl border border-dashed border-line p-4 text-sm text-ink-soft">
         <p className="mb-1 font-semibold text-ink">Please read</p>
@@ -270,7 +273,7 @@ function DaanSection({ daan, cap, today }: { daan: Daan[]; cap: number | null; t
 
 // ------------------------------------------------------------ Planets in the chart
 
-function PlanetSection({ person, now, canTrack }: { person: Person; now: Date; canTrack: boolean }) {
+function PlanetSection({ person, now, canTrack, reviews }: { person: Person; now: Date; canTrack: boolean; reviews: ReviewIndex }) {
   const input = toBirthInput(person);
   if (!input) {
     return (
@@ -299,7 +302,7 @@ function PlanetSection({ person, now, canTrack }: { person: Person; now: Date; c
         </p>
       )}
       {rows.map((a) => (
-        <PlanetCard key={a.planet} a={a} describe={ctx.describe(a.planet)} personId={person.id} canTrack={canTrack} />
+        <PlanetCard key={a.planet} a={a} describe={ctx.describe(a.planet)} personId={person.id} canTrack={canTrack} reviews={reviews} />
       ))}
       <div className="rounded-xl border border-dashed border-line p-4 text-sm text-ink-soft">
         <p className="mb-1 font-semibold text-ink">About gemstones</p>
@@ -314,8 +317,17 @@ function PlanetSection({ person, now, canTrack }: { person: Person; now: Date; c
   );
 }
 
-function PlanetCard({ a, describe, personId, canTrack }: { a: PlanetAssessment; describe: string; personId: string; canTrack: boolean }) {
+function PlanetCard({ a, describe, personId, canTrack, reviews }: { a: PlanetAssessment; describe: string; personId: string; canTrack: boolean; reviews: ReviewIndex }) {
   const info = PLANET_REMEDY[a.planet];
+  // Entries switched off in the Research Library are not shown.
+  const practices = starterRemedies(a.planet).filter((r) => reviews.get("remedy", r.key).status !== "disabled");
+  const stone = reviews.get("remedy", `${a.planet}-gemstone`);
+  const badge = (key: string) => {
+    const rv = reviews.get("remedy", key);
+    if (rv.status === "verified") return <span className="chip ml-1 bg-ok-soft text-ok" title={rv.citation ?? undefined}>Verified{rv.citation ? `: ${rv.citation}` : ""}</span>;
+    if (rv.status === "disputed") return <span className="chip ml-1 bg-warn-soft text-warn">Disputed{rv.note ? `: ${rv.note}` : ""}</span>;
+    return null;
+  };
   return (
     <details className="card" open={a.weakBenefic}>
       <summary className="flex cursor-pointer list-none flex-wrap items-center justify-between gap-2 px-5 py-4">
@@ -336,12 +348,13 @@ function PlanetCard({ a, describe, personId, canTrack }: { a: PlanetAssessment; 
         </ul>
 
         <ol className="space-y-3">
-          {starterRemedies(a.planet).map((r, i) => (
+          {practices.map((r, i) => (
             <li key={r.key} className="rounded-xl border border-line p-3">
               <div className="flex flex-wrap items-start justify-between gap-2">
                 <div>
                   <p className="font-semibold">
                     {i + 1}. {r.title} <span className="chip ml-1 bg-surface-2 text-ink-soft">{r.cost === "free" ? "Free" : "Low cost"}</span>
+                    {badge(r.key)}
                   </p>
                   <p className="text-ink-soft">{r.detail}</p>
                   {r.safety.map((s) => (
@@ -367,10 +380,12 @@ function PlanetCard({ a, describe, personId, canTrack }: { a: PlanetAssessment; 
               </div>
             </li>
           ))}
+          {stone.status !== "disabled" && (
           <li className="rounded-xl border border-line p-3">
             <p className="font-semibold">
-              {starterRemedies(a.planet).length + 1}. Gemstone: {a.stone}{" "}
+              {practices.length + 1}. Gemstone: {a.stone}{" "}
               <span className={`chip ml-1 ${ROLE[a.role].cls}`}>{STONE[a.role]}</span> <span className="chip bg-surface-2 text-ink-soft">High cost</span>
+              {badge(`${a.planet}-gemstone`)}
             </p>
             <p className="text-ink-soft">
               {a.role === "avoided"
@@ -384,8 +399,12 @@ function PlanetCard({ a, describe, personId, canTrack }: { a: PlanetAssessment; 
               <p key={c} className="text-xs text-warn">{c}</p>
             ))}
           </li>
+          )}
         </ol>
-        <p className="text-xs text-muted">{ATTRIBUTION}</p>
+        <p className="text-xs text-muted">
+          Entries without a Verified badge: {ATTRIBUTION.toLowerCase()}. Review them in the{" "}
+          <Link href="/library?tab=remedies" className="font-semibold text-gold underline-offset-4 hover:underline">Research Library</Link>.
+        </p>
       </div>
     </details>
   );
