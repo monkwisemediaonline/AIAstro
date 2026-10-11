@@ -112,8 +112,16 @@ const BOUNDARY_WARN_DEG = 0.05;
 
 export function snapshot(utc: Date, lat: number, lon: number, withAngles: boolean): ChartSnapshot {
   const { ayanamsha, list } = siderealPlanets(utc, PLANETS);
+  const asc = withAngles ? siderealAngles(utc, lat, lon).asc : null;
+  return snapshotFromPositions(list, asc, utc.toISOString(), ayanamsha);
+}
+
+export type RawPosition = { planet: Planet; sidereal: number; speed: number };
+
+/** Builds a chart snapshot from sidereal longitudes. Also used by tests to hand-build synthetic charts. */
+export function snapshotFromPositions(list: RawPosition[], ascLon: number | null, utcIso: string, ayanamsha: number): ChartSnapshot {
   const sun = list.find((p) => p.planet === "Sun")!;
-  const angles = withAngles ? siderealAngles(utc, lat, lon) : null;
+  const angles = ascLon === null ? null : { asc: ascLon };
   const ascSign = angles ? Math.floor(angles.asc / 30) % 12 : null;
   const vargaKeys = VARGAS.map((v) => v.key);
 
@@ -167,7 +175,7 @@ export function snapshot(utc: Date, lat: number, lon: number, withAngles: boolea
     });
   }
 
-  return { utc: utc.toISOString(), ayanamsha, ascendant, planets, houses };
+  return { utc: utcIso, ayanamsha, ascendant, planets, houses };
 }
 
 /** Values tracked across a birth-time range or across an unknown day. */

@@ -37,6 +37,7 @@ async function PersonContent({ params }: { params: PageProps<"/people/[id]">["pa
         <div className="flex flex-wrap gap-2">
           <Link href={`/people/${id}/edit`} className="btn btn-ghost">Edit details</Link>
           {stored && <RecalcButton personId={id} />}
+          <Link href={`/yoga?p=${id}`} className="btn btn-gold">Raj &amp; Dhana Yoga</Link>
           <Link href={`/partner?a=${id}`} className="btn btn-ghost">Partner Vibes</Link>
           <DeleteButton personId={id} name={person.display_name} />
         </div>

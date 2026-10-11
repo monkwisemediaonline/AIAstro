@@ -104,7 +104,7 @@ export function ChartView({ result }: { result: ChartResult }) {
                   </td>
                   {availability.houses && <td className="tabular">{p.house}</td>}
                   {availability.houses && <td className="tabular text-ink-soft">{p.rules?.join(", ") || "—"}</td>}
-                  {availability.houses && <td className="tabular text-ink-soft">{p.aspectsHouses?.join(", ")}</td>}
+                  {availability.houses && <td className="tabular text-ink-soft">{p.aspectsHouses?.join(", ") || "—"}</td>}
                   {availability.vargas && <td>{SIGNS[p.vargas.D9!]}</td>}
                   {availability.vargas && <td>{SIGNS[p.vargas.D10!]}</td>}
                   <td className="space-x-1">

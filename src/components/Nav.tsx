@@ -6,11 +6,11 @@ import { usePathname } from "next/navigation";
 const LIVE = [
   { href: "/", label: "Overview" },
   { href: "/people/new", label: "Add birth details" },
+  { href: "/yoga", label: "Raj & Dhana Yoga" },
   { href: "/partner", label: "Partner Vibes" },
 ];
 
 const SOON = [
-  "Raj & Dhana Yoga",
   "Dasha & Transits",
   "Business & Wealth",
   "Numerology",

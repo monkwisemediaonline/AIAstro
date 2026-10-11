@@ -63,6 +63,8 @@ export function isCombust(planet: Planet, lon: number, sunLon: number, retrograd
 
 /** Houses (1–12, counted from the planet's own house) aspected by graha drishti. */
 export function aspectedHouseOffsets(planet: Planet): number[] {
+  // Rahu and Ketu cast no graha drishti in this ruleset (schools differ; see ENGINE_SPEC §8).
+  if (planet === "Rahu" || planet === "Ketu") return [];
   return [7, ...(SPECIAL_ASPECTS[planet] ?? [])];
 }
 
