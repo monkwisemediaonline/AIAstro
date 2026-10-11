@@ -19,6 +19,7 @@ export interface Store {
   createPerson(input: PersonInput): Promise<Person>;
   updatePerson(id: string, input: PersonInput): Promise<Person>;
   deletePerson(id: string): Promise<void>;
+  setAiAllowed(id: string, allowed: boolean): Promise<void>;
   latestChart(personId: string): Promise<StoredChart | null>;
   saveChart(personId: string, input: BirthInput, result: ChartResult): Promise<StoredChart>;
 }
@@ -65,6 +66,10 @@ async function supabaseStore(): Promise<Store> {
     },
     async deletePerson(id) {
       const { error } = await sb.from("people").delete().eq("id", id);
+      fail(error);
+    },
+    async setAiAllowed(id, allowed) {
+      const { error } = await sb.from("people").update({ ai_allowed: allowed }).eq("id", id);
       fail(error);
     },
     async latestChart(personId) {
@@ -147,6 +152,12 @@ function localDevStore(): Store {
       const db = await readDev();
       db.people = db.people.filter((p) => p.id !== id);
       db.charts = db.charts.filter((c) => c.person_id !== id);
+      await writeDev(db);
+    },
+    async setAiAllowed(id, allowed) {
+      const db = await readDev();
+      const p = db.people.find((x) => x.id === id);
+      if (p) p.ai_allowed = allowed;
       await writeDev(db);
     },
     async latestChart(personId) {

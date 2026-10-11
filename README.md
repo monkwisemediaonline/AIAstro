@@ -18,6 +18,10 @@ Next.js 16 · Supabase (Postgres + Auth, owner-only RLS) · Vercel.
   date with houses from Moon and Lagna, Sade Sati and Dhaiya windows, Jupiter/Saturn/Rahu sign changes.
 - **Lal Kitab** — house-based teva, kept separate from Parashari. No built-in readings: notes and upay
   are entered by the owner from their own edition, with source, page and a safety check.
+- **Business & Wealth** — traditional wealth/career indicators next to a real execution tracker
+  (monthly revenue, margin, cash, pipeline), goals, and a retrospective log of indicated vs actual.
+- **AI Assistant** — Claude explains already-computed results in a fixed structure; per-person opt-in,
+  no name/date/place sent, every answer fact-checked against the chart before display.
 - **Numerology** — Chaldean, Pythagorean and Indian (Mulank, Bhagyank, Lo Shu, personal year); phone and
   other numbers; a name-change lab. Every letter value and step is shown.
 - **Remedies & Rituals** — per-planet starter practices (free first), gemstone reasoning by lordship,
@@ -25,8 +29,7 @@ Next.js 16 · Supabase (Postgres + Auth, owner-only RLS) · Vercel.
 - **Partner Vibes** — business-partner comparison, seven factors each labelled by basis.
 - Owner-only login (Supabase), no public sign-up.
 
-Planned next (see `docs/IMPLEMENTATION_PLAN.md`): business & wealth dashboard, research library,
-AI assistant.
+Planned next (see `docs/IMPLEMENTATION_PLAN.md`): research library for verifying rules against sources.
 
 ## Run locally
 ```bash

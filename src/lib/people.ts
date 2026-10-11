@@ -39,6 +39,8 @@ export type Person = {
   data_source: string | null;
   notes: string | null;
   is_minor: boolean;
+  /** Per-person opt-in for the AI Assistant. Off unless the owner turns it on. */
+  ai_allowed?: boolean;
   status: "draft" | "confirmed";
   created_at: string;
   updated_at: string;

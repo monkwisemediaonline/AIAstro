@@ -17,7 +17,7 @@ Follow these steps once to put it online privately.
 2. **Authentication → Sign In / Providers → Email**: keep Email enabled, **turn OFF "Allow new users to sign up"**.
 3. **Authentication → Users → Add user → Create new user**: your email + a strong password, tick "Auto confirm".
 4. **SQL Editor**: paste and run each file in `supabase/migrations/` in date order
-   (`20261010000000_init.sql`, `20261011000000_remedies.sql`, `20261012000000_lal_kitab.sql`). Run any new migration file
+   (`20261010000000_init.sql`, `20261011000000_remedies.sql`, `20261012000000_lal_kitab.sql`, `20261013000000_business.sql`). Run any new migration file
    added later the same way.
 5. Make yourself the owner (SQL Editor):
    ```sql
@@ -40,7 +40,9 @@ Restart `npm run dev` → you'll see the login page.
 ## 4. Vercel
 1. vercel.com → Add New → Project → import the GitHub repo.
 2. Environment variables (Production + Preview): the two values above.
-3. Deploy. Every push to `main` redeploys.
+3. Optional, for the AI Assistant: add `ANTHROPIC_API_KEY` (from console.anthropic.com; pay-per-use).
+   `ANTHROPIC_MODEL` is optional (default `claude-opus-5-5`).
+4. Deploy. Every push to `main` redeploys.
 4. Optional: Settings → Deployment Protection → Vercel Authentication for previews.
 
 ## Security model

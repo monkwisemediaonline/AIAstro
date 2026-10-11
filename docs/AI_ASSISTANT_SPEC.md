@@ -27,11 +27,10 @@ default.
 6. Display with "show calculation" and "show sources" buttons per evidence row.
 
 ## 2. Model
-Default `claude-sonnet-5-5` (good cost/quality for explanation). Option for
-`claude-opus-5-5` for long synthesis reports. Configurable in Settings. Use prompt
-caching for the system prompt + chart context. Server-side only; key in `.env.local`.
-Before writing the adapter, Claude Code should check the current Anthropic SDK docs for
-the structured-output / tool-use API.
+Default `claude-opus-5-5`, overridable with `ANTHROPIC_MODEL` (for example `claude-sonnet-5-5` for lower cost).
+Implemented in `src/ai/ask.ts` with `client.beta.messages.parse` + `betaZodOutputFormat` (structured output),
+the chart context cached in the system prompt, and the server-side refusal fallback (`fallbacks: "default"`).
+Server-side only; key in `ANTHROPIC_API_KEY`.
 
 ## 3. System prompt (starting point)
 ```

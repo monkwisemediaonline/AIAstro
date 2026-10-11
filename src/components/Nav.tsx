@@ -8,16 +8,16 @@ const LIVE = [
   { href: "/people/new", label: "Add birth details" },
   { href: "/yoga", label: "Raj & Dhana Yoga" },
   { href: "/timeline", label: "Dasha & Transits" },
+  { href: "/business", label: "Business & Wealth" },
   { href: "/numerology", label: "Numerology" },
   { href: "/lal-kitab", label: "Lal Kitab" },
   { href: "/remedies", label: "Remedies & Rituals" },
   { href: "/partner", label: "Partner Vibes" },
+  { href: "/assistant", label: "AI Assistant" },
 ];
 
 const SOON = [
-  "Business & Wealth",
   "Research Library",
-  "AI Assistant",
 ];
 
 export function Nav({ people }: { people: { id: string; name: string }[] }) {
