@@ -84,9 +84,11 @@ describe("favourable days", () => {
     expect(scoreDay("2024-11-15", "Asia/Kolkata", natal).tithi).toBe("Purnima");
   });
 
-  it("returns five explained factors that add up to the score", () => {
+  it("returns seven explained factors that add up to the score", () => {
     const d = scoreDay("2026-10-11", "Asia/Kolkata", natal);
-    expect(d.factors).toHaveLength(5);
+    expect(d.factors).toHaveLength(7);
+    expect(d.yoga.length).toBeGreaterThan(2);
+    expect(d.karana.length).toBeGreaterThan(2);
     expect(d.factors.reduce((s, f) => s + f.score, 0)).toBeCloseTo(d.score, 5);
     for (const f of d.factors) expect(f.note.length + f.value.length).toBeGreaterThan(5);
     expect(d.weekday).toBe("Sunday");

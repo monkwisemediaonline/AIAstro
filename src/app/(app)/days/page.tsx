@@ -1,9 +1,12 @@
 import { Suspense } from "react";
 import { wealthIndicators } from "@/business/indicators";
-import { DayRow, NeedsDetails, PersonPicker, RATING, fmtDay } from "@/components/Guidance";
+import { DayRow, MuhurtaCard, NeedsDetails, PersonPicker, RATING, fmtDay } from "@/components/Guidance";
+import { LocationPicker } from "@/components/LocationPicker";
 import { SIGNS } from "@/engine/constants";
+import { MUHURTA_RULES, dayMuhurta, type DayMuhurta, type Place } from "@/engine/muhurta";
 import { DAY_RULES, scoreDays } from "@/engine/panchang";
 import { GOCHARA_GOOD, signStays } from "@/engine/transits";
+import { getOwnerLocation } from "@/lib/location-store";
 import { loadPersonContext } from "@/lib/person-context";
 import { TRANSIT_FROM_MOON } from "@/reading/meanings";
 
@@ -16,7 +19,7 @@ export default function DaysPage(props: PageProps<"/days">) {
         <p className="text-xs font-semibold uppercase tracking-[0.16em] text-gold">Timing · free, no AI</p>
         <h1 className="font-display text-4xl font-semibold">Favourable Days</h1>
         <p className="mt-1 max-w-2xl text-sm text-ink-soft">
-          Each day is rated for you personally from five traditional factors: Moon strength, star strength, tithi, weekday and number. Open a day to see exactly why it got its rating.
+          Each day is rated for you personally from seven traditional factors, and today is broken into hours: Rahu Kaal, Abhijit, Choghadiya and planetary hours for your city. Open a day to see exactly why it got its rating.
         </p>
       </header>
       <Suspense fallback={<p className="text-sm text-muted">Calculating the next 45 days…</p>}>
@@ -30,13 +33,30 @@ async function Content({ searchParams }: { searchParams: PageProps<"/days">["sea
   const sp = await searchParams;
   const { people, person, now, data } = await loadPersonContext(sp.p);
   if (!person || !data) return <NeedsDetails person={person} />;
-  const { natal, tz, chart, yogas, reading } = data;
+  const { natal, chart, yogas, reading } = data;
+
+  // Sunrise-based timings use where the owner lives now; until that is set, the birthplace.
+  const saved = await getOwnerLocation();
+  const place: Place & { name: string } =
+    saved && saved !== "setup"
+      ? saved
+      : { name: person.place_name ?? "birthplace", lat: chart.input.lat, lon: chart.input.lon, tz: chart.input.ianaTz };
+  const usingBirthplace = !saved || saved === "setup";
+  const tz = place.tz;
+  const muhurtaFor = (date: string): DayMuhurta | null => {
+    try {
+      return dayMuhurta(date, place);
+    } catch {
+      return null; // polar day or night
+    }
+  };
 
   const todayLocal = new Intl.DateTimeFormat("en-CA", { timeZone: tz }).format(now); // YYYY-MM-DD
   const days = scoreDays(todayLocal, 45, tz, natal);
   const today = days[0];
   const best = [...days.slice(1)].filter((d) => d.rating === "very_good" || d.rating === "good").sort((a, b) => b.score - a.score || a.date.localeCompare(b.date)).slice(0, 8).sort((a, b) => a.date.localeCompare(b.date));
   const avoid = days.slice(1).filter((d) => d.rating === "avoid").slice(0, 8);
+  const todayMuhurta = muhurtaFor(today.date);
   const tally = { very_good: 0, good: 0, neutral: 0, avoid: 0 };
   for (const d of days) tally[d.rating]++;
 
@@ -81,12 +101,19 @@ async function Content({ searchParams }: { searchParams: PageProps<"/days">["sea
         </div>
       </section>
 
+      {todayMuhurta && <MuhurtaCard m={todayMuhurta} tz={tz} place={place.name} natalLord={natal.lagnaLord} />}
+      <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-ink-soft">
+        {usingBirthplace && <span>Hours are worked out for the birthplace. Set the city you live in now for correct sunrise times.</span>}
+        <LocationPicker current={place.name} canSave={saved !== "setup"} />
+        {saved === "setup" && <span className="text-warn">To save a city, run the pending setup script in Supabase.</span>}
+      </div>
+
       <div className="grid gap-6 lg:grid-cols-2">
         <section className="card p-5">
           <h2 className="font-display text-2xl font-semibold">Best days ahead</h2>
           <p className="text-sm text-muted">For launches, signing, important meetings, asking for money, starting a practice.</p>
           <div className="mt-3 space-y-2">
-            {best.length ? best.map((d) => <DayRow key={d.date} d={d} />) : <p className="text-sm text-ink-soft">No clearly favourable day in the next 45 days under these rules.</p>}
+            {best.length ? best.map((d) => { const m = muhurtaFor(d.date); return <DayRow key={d.date} d={d} muhurta={m ? { m, tz } : undefined} />; }) : <p className="text-sm text-ink-soft">No clearly favourable day in the next 45 days under these rules.</p>}
           </div>
         </section>
         <section className="card p-5">
@@ -158,8 +185,9 @@ async function Content({ searchParams }: { searchParams: PageProps<"/days">["sea
       </section>
 
       <footer className="rounded-xl border border-dashed border-line p-4 text-xs text-muted">
-        Method ({DAY_RULES}): Chandra Bala +2 / 0 / −2 (8th from Moon −3 and always “avoid”), Tara Bala +2 / 0 / −2, tithi +1 Purna, −1 Rikta, −2 Amavasya, weekday ±1 by friendship with your Lagna lord and ±0.5 for trade days, day number ±1 against your Mulank. Total ≥ 4 very favourable, ≥ 1.5 favourable, below −1.5 avoid.
-        Positions are for midday in your birth timezone. Rahu Kaal, Yoga, Karana and Lagna-based muhurta are not included. A good day does not rescue a bad decision; a hard day does not ruin a good one.
+        Day rating ({DAY_RULES}): Chandra Bala +2 / 0 / −2 (8th from Moon −3 and always “avoid”), Tara Bala +2 / 0 / −2, tithi +1 Purna, −1 Rikta, −2 Amavasya, weekday ±1 by friendship with your Lagna lord and ±0.5 for trade days, day number ±1 against your Mulank. Total ≥ 4 very favourable, ≥ 1.5 favourable, below −1.5 avoid.
+        Yoga −1 for the nine avoided yogas; Karana −1 for Vishti (Bhadra). Day positions are for midday.
+        Hours ({MUHURTA_RULES}): Rahu Kaal, Yamaganda and Gulika are fixed eighths of the sunrise-to-sunset span by weekday; Abhijit is the 8th of 15 parts of the day; Choghadiya and hora follow the weekday lord. Night periods and Lagna-based (ascendant) muhurta are not included. A good day does not rescue a bad decision; a hard day does not ruin a good one.
       </footer>
     </div>
   );

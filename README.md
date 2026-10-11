@@ -14,8 +14,9 @@ Next.js 16 · Supabase (Postgres + Auth, owner-only RLS) · Vercel.
   show which results change; unknown times give a Moon chart with warnings.
 - **My Reading** — plain-language interpretation composed by fixed rules from the calculated chart:
   nature, wealth, business, marriage, children, current period, this year, strengths, what to do. Free, no AI.
-- **Favourable Days** — each day rated from Chandra Bala, Tara Bala, tithi, weekday and day number,
-  with every factor shown; plus the multi-year view from Jupiter, Saturn and Dasha.
+- **Favourable Days** — each day rated from Chandra Bala, Tara Bala, tithi, yoga, karana, weekday and
+  day number, with every factor shown. Today by the hour for your city: Rahu Kaal, Yamaganda, Gulika,
+  Abhijit, Brahma Muhurta, Choghadiya, planetary hours and the best windows. Plus the multi-year view.
 - **Ask** — a free, rule-based question box (English/Hinglish) that answers by topic from the reading.
 - **Sadhana** — self-practice only: Lakshmi, Kubera, Ganesha, protective and family practices, and an
   Ishta Devata reading (Jaimini karakamsha). Nothing aimed at another person.

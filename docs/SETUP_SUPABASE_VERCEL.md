@@ -17,8 +17,10 @@ Follow these steps once to put it online privately.
 2. **Authentication → Sign In / Providers → Email**: keep Email enabled, **turn OFF "Allow new users to sign up"**.
 3. **Authentication → Users → Add user → Create new user**: your email + a strong password, tick "Auto confirm".
 4. **SQL Editor**: paste and run each file in `supabase/migrations/` in date order
-   (`20261010000000_init.sql`, `20261011000000_remedies.sql`, `20261012000000_lal_kitab.sql`, `20261013000000_business.sql`, `20261014000000_library.sql`). Run any new migration file
+   (`20261010000000_init.sql`, `20261011000000_remedies.sql`, `20261012000000_lal_kitab.sql`, `20261013000000_business.sql`, `20261014000000_library.sql`, `20261015000000_location.sql`). Run any new migration file
    added later the same way.
+   Shortcut: `supabase/setup_pending.sql` creates every table after the initial schema in one go and
+   is safe to run again.
 5. Make yourself the owner (SQL Editor):
    ```sql
    insert into public.app_owner (user_id)

@@ -4,11 +4,14 @@ import { NAKSHATRAS, naturalRelation, type Planet } from "./constants";
 import { norm360 } from "./math";
 import { houseFrom, nakshatraOf } from "./zodiac";
 
-export const DAY_RULES = "favourable-days@1.0.0";
+export const DAY_RULES = "favourable-days@1.1.0";
 
 const WEEKDAY_LORD: Planet[] = ["Sun", "Moon", "Mars", "Mercury", "Jupiter", "Venus", "Saturn"]; // Sunday first
 const WEEKDAY_NAME = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 const TARA = ["Janma", "Sampat", "Vipat", "Kshema", "Pratyari", "Sadhaka", "Vadha", "Mitra", "Param Mitra"];
+const YOGA = ["Vishkambha", "Priti", "Ayushman", "Saubhagya", "Shobhana", "Atiganda", "Sukarma", "Dhriti", "Shula", "Ganda", "Vriddhi", "Dhruva", "Vyaghata", "Harshana", "Vajra", "Siddhi", "Vyatipata", "Variyana", "Parigha", "Shiva", "Siddha", "Sadhya", "Shubha", "Shukla", "Brahma", "Indra", "Vaidhriti"];
+const BAD_YOGA = new Set(["Vishkambha", "Atiganda", "Shula", "Ganda", "Vyaghata", "Vajra", "Vyatipata", "Parigha", "Vaidhriti"]);
+const MOVABLE_KARANA = ["Bava", "Balava", "Kaulava", "Taitila", "Gara", "Vanija", "Vishti (Bhadra)"];
 const TITHI = ["Pratipada", "Dwitiya", "Tritiya", "Chaturthi", "Panchami", "Shashthi", "Saptami", "Ashtami", "Navami", "Dashami", "Ekadashi", "Dwadashi", "Trayodashi", "Chaturdashi"];
 
 export type Factor = { name: string; value: string; score: number; note: string };
@@ -17,6 +20,8 @@ export type DayScore = {
   date: string; // YYYY-MM-DD (local)
   weekday: string;
   tithi: string;
+  yoga: string;
+  karana: string;
   nakshatra: string;
   moonSign: number;
   score: number;
@@ -36,9 +41,10 @@ const reduce = (n: number) => {
 const NUMBER_PLANET: Record<number, Planet> = { 1: "Sun", 2: "Moon", 3: "Jupiter", 4: "Rahu", 5: "Mercury", 6: "Venus", 7: "Ketu", 8: "Saturn", 9: "Mars" };
 
 /**
- * Scores one calendar day for starting things and for business dealings, from five traditional factors:
+ * Scores one calendar day for starting things and for business dealings, from seven traditional factors:
  * Chandra Bala (Moon's house from the natal Moon), Tara Bala (day star counted from the birth star),
- * tithi class, weekday lord, and the day number against the Mulank. Positions are taken at local noon.
+ * tithi class, yoga, karana, weekday lord, and the day number against the Mulank.
+ * Positions are taken at local noon; clock-time windows within the day come from muhurta.ts.
  */
 export function scoreDay(date: string, tz: string, natal: NatalForDays): DayScore {
   const noon = DateTime.fromISO(`${date}T12:00:00`, { zone: tz });
@@ -86,6 +92,27 @@ export function scoreDay(date: string, tz: string, natal: NatalForDays): DayScor
     note: t === 30 ? "New Moon: kept for ancestors and prayer, not for new ventures." : rikta ? "A Rikta (empty) tithi: avoided for beginnings." : purna ? "A Purna (full) tithi: good for completing and for money matters." : "Ordinary tithi.",
   });
 
+  // 3b. Yoga: the sum of the Sun's and Moon's longitudes in 27 parts
+  const yoga = YOGA[Math.floor(norm360(sun + moon) / (360 / 27)) % 27];
+  const badYoga = BAD_YOGA.has(yoga);
+  factors.push({
+    name: "Yoga",
+    value: yoga,
+    score: badYoga ? -1 : 0,
+    note: badYoga ? "One of the nine yogas traditionally avoided for beginnings." : "Not one of the avoided yogas.",
+  });
+
+  // 3c. Karana: half of a tithi
+  const k = Math.floor(elong / 6); // 0..59
+  const karana = k === 0 ? "Kimstughna" : k === 57 ? "Shakuni" : k === 58 ? "Chatushpada" : k === 59 ? "Naga" : MOVABLE_KARANA[(k - 1) % 7];
+  const vishti = karana.startsWith("Vishti");
+  factors.push({
+    name: "Karana",
+    value: karana,
+    score: vishti ? -1 : 0,
+    note: vishti ? "Vishti (Bhadra) is avoided for auspicious work." : "Not Vishti.",
+  });
+
   // 4. Weekday
   const wd = noon.weekday % 7; // luxon: Monday=1 … Sunday=7
   const lord = WEEKDAY_LORD[wd];
@@ -118,7 +145,7 @@ export function scoreDay(date: string, tz: string, natal: NatalForDays): DayScor
   const rating: DayRating = ch === 8 ? "avoid" : score >= 4 ? "very_good" : score >= 1.5 ? "good" : score > -1.5 ? "neutral" : "avoid";
   const nakshatraChanges = nakshatraOf(siderealLongitude("Moon", at(6))).index !== nakshatraOf(siderealLongitude("Moon", at(21))).index;
 
-  return { date, weekday: WEEKDAY_NAME[wd], tithi: tithiName, nakshatra: nak.name, moonSign, score, rating, factors, nakshatraChanges };
+  return { date, weekday: WEEKDAY_NAME[wd], tithi: tithiName, yoga, karana, nakshatra: nak.name, moonSign, score, rating, factors, nakshatraChanges };
 }
 
 export function scoreDays(from: string, days: number, tz: string, natal: NatalForDays): DayScore[] {
