@@ -77,5 +77,11 @@ export function siderealAngles(date: Date, latDeg: number, lonDeg: number): { as
   return { asc: norm360(asc - ayan), mc: norm360(mc - ayan) };
 }
 
+/** Sidereal longitude of one planet at an instant (no speed). Used for transit scans. */
+export function siderealLongitude(planet: Planet, date: Date): number {
+  const time = A.MakeTime(date);
+  return norm360(tropicalLongitude(planet, time) - ayanamshaTrue(time));
+}
+
 export const ENGINE_NAME = "astronomy-engine";
 export const ENGINE_VERSION = "2.1.19";

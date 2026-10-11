@@ -14,6 +14,10 @@ Next.js 16 · Supabase (Postgres + Auth, owner-only RLS) · Vercel.
   show which results change; unknown times give a Moon chart with warnings.
 - **Raj & Dhana Yoga** — 27 Parashari rules with conditions met/not met, evidence, a labelled strength
   heuristic, Dasha timing and practical actions. All rules are drafts awaiting source verification.
+- **Dasha & Transits** — current Mahadasha/Antardasha/Pratyantardasha, life timeline, transits on any
+  date with houses from Moon and Lagna, Sade Sati and Dhaiya windows, Jupiter/Saturn/Rahu sign changes.
+- **Lal Kitab** — house-based teva, kept separate from Parashari. No built-in readings: notes and upay
+  are entered by the owner from their own edition, with source, page and a safety check.
 - **Numerology** — Chaldean, Pythagorean and Indian (Mulank, Bhagyank, Lo Shu, personal year); phone and
   other numbers; a name-change lab. Every letter value and step is shown.
 - **Remedies & Rituals** — per-planet starter practices (free first), gemstone reasoning by lordship,
@@ -21,8 +25,8 @@ Next.js 16 · Supabase (Postgres + Auth, owner-only RLS) · Vercel.
 - **Partner Vibes** — business-partner comparison, seven factors each labelled by basis.
 - Owner-only login (Supabase), no public sign-up.
 
-Planned next (see `docs/IMPLEMENTATION_PLAN.md`): transits, business & wealth dashboard, Lal Kitab,
-research library, AI assistant.
+Planned next (see `docs/IMPLEMENTATION_PLAN.md`): business & wealth dashboard, research library,
+AI assistant.
 
 ## Run locally
 ```bash
