@@ -17,7 +17,8 @@ export default function OverviewPage() {
           </p>
         </div>
         <div className="flex gap-2">
-          <Link href="/partner" className="btn btn-ghost">Partner Vibes</Link>
+          <Link href="/reading" className="btn btn-primary">My Reading</Link>
+          <Link href="/days" className="btn btn-ghost">Favourable Days</Link>
           <Link href="/people/new" className="btn btn-gold">+ Add birth details</Link>
         </div>
       </header>

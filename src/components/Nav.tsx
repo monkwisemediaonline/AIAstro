@@ -5,16 +5,20 @@ import { usePathname } from "next/navigation";
 
 const LIVE = [
   { href: "/", label: "Overview" },
-  { href: "/people/new", label: "Add birth details" },
+  { href: "/reading", label: "My Reading" },
+  { href: "/days", label: "Favourable Days" },
+  { href: "/ask", label: "Ask" },
+  { href: "/sadhana", label: "Sadhana" },
+  { href: "/business", label: "Business & Wealth" },
   { href: "/yoga", label: "Raj & Dhana Yoga" },
   { href: "/timeline", label: "Dasha & Transits" },
-  { href: "/business", label: "Business & Wealth" },
   { href: "/numerology", label: "Numerology" },
-  { href: "/lal-kitab", label: "Lal Kitab" },
   { href: "/remedies", label: "Remedies & Rituals" },
+  { href: "/lal-kitab", label: "Lal Kitab" },
   { href: "/partner", label: "Partner Vibes" },
-  { href: "/assistant", label: "AI Assistant" },
   { href: "/library", label: "Research Library" },
+  { href: "/people/new", label: "Add birth details" },
+  { href: "/assistant", label: "AI Assistant (optional, paid)" },
 ];
 
 const SOON: string[] = [];

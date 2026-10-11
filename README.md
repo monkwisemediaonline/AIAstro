@@ -12,6 +12,13 @@ Next.js 16 · Supabase (Postgres + Auth, owner-only RLS) · Vercel.
   signs, Vimshottari Dasha (MD/AD/PD).
 - **Birth-time sensitivity** — range births are calculated every 4 minutes across the window and
   show which results change; unknown times give a Moon chart with warnings.
+- **My Reading** — plain-language interpretation composed by fixed rules from the calculated chart:
+  nature, wealth, business, marriage, children, current period, this year, strengths, what to do. Free, no AI.
+- **Favourable Days** — each day rated from Chandra Bala, Tara Bala, tithi, weekday and day number,
+  with every factor shown; plus the multi-year view from Jupiter, Saturn and Dasha.
+- **Ask** — a free, rule-based question box (English/Hinglish) that answers by topic from the reading.
+- **Sadhana** — self-practice only: Lakshmi, Kubera, Ganesha, protective and family practices, and an
+  Ishta Devata reading (Jaimini karakamsha). Nothing aimed at another person.
 - **Raj & Dhana Yoga** — 27 Parashari rules with conditions met/not met, evidence, a labelled strength
   heuristic, Dasha timing and practical actions. All rules are drafts awaiting source verification.
 - **Dasha & Transits** — current Mahadasha/Antardasha/Pratyantardasha, life timeline, transits on any
@@ -20,7 +27,7 @@ Next.js 16 · Supabase (Postgres + Auth, owner-only RLS) · Vercel.
   are entered by the owner from their own edition, with source, page and a safety check.
 - **Business & Wealth** — traditional wealth/career indicators next to a real execution tracker
   (monthly revenue, margin, cash, pipeline), goals, and a retrospective log of indicated vs actual.
-- **AI Assistant** — Claude explains already-computed results in a fixed structure; per-person opt-in,
+- **AI Assistant (optional, paid)** — not needed for any of the above. Claude explains already-computed results in a fixed structure; per-person opt-in,
   no name/date/place sent, every answer fact-checked against the chart before display.
 - **Research Library** — register of source books and a review for every yoga rule and remedy entry
   (draft / verified with citation / disputed / switched off); the other pages follow these statuses.

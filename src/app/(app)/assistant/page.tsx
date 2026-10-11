@@ -45,6 +45,13 @@ async function Content({ searchParams }: { searchParams: PageProps<"/assistant">
 
   return (
     <div className="space-y-6">
+      <p className="rounded-xl bg-gold-soft px-4 py-3 text-sm">
+        <b>This page is optional and costs money per question.</b> The free pages —{" "}
+        <Link href="/reading" className="font-semibold underline underline-offset-4">My Reading</Link>,{" "}
+        <Link href="/ask" className="font-semibold underline underline-offset-4">Ask</Link> and{" "}
+        <Link href="/days" className="font-semibold underline underline-offset-4">Favourable Days</Link> — answer from your chart with no AI service and no cost.
+      </p>
+
       {!configured && (
         <div className="card border-warn/40 bg-warn-soft p-5 text-sm text-warn">
           <p className="font-semibold">One-time setup: add an Anthropic API key</p>
