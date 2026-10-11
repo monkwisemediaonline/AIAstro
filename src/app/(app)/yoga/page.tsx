@@ -144,7 +144,7 @@ function Report({ person, now }: { person: Person; now: Date }) {
               <p className="text-sm text-muted">{sec.blurb}</p>
             </div>
             {shown.map((r) => (
-              <YogaCard key={r.ruleId} r={r} chart={chart} now={now} />
+              <YogaCard key={r.ruleId} r={r} chart={chart} now={now} personId={person.id} />
             ))}
             {shown.length === 0 && <p className="text-sm text-ink-soft">None present under these rules.</p>}
             {absent.length > 0 && (
@@ -152,7 +152,7 @@ function Report({ person, now }: { person: Person; now: Date }) {
                 <summary className="cursor-pointer px-5 py-3 text-sm font-semibold text-ink-soft">Not present ({absent.length}) — see why</summary>
                 <div className="space-y-3 border-t border-line p-3">
                   {absent.map((r) => (
-                    <YogaCard key={r.ruleId} r={r} chart={chart} now={now} compact />
+                    <YogaCard key={r.ruleId} r={r} chart={chart} now={now} personId={person.id} compact />
                   ))}
                 </div>
               </details>
@@ -178,7 +178,7 @@ function Tile({ n, label }: { n: number; label: string }) {
   );
 }
 
-function YogaCard({ r, chart, now, compact }: { r: YogaResult; chart: ChartResult; now: Date; compact?: boolean }) {
+function YogaCard({ r, chart, now, personId, compact }: { r: YogaResult; chart: ChartResult; now: Date; personId: string; compact?: boolean }) {
   const st = STATUS[r.status];
   const supportable = (r.status === "detected" || r.status === "partial") && r.category !== "caution";
   return (
@@ -223,7 +223,7 @@ function YogaCard({ r, chart, now, compact }: { r: YogaResult; chart: ChartResul
         <InstanceBlock key={inst.title} inst={inst} />
       ))}
 
-      {supportable && <SupportPanel r={r} chart={chart} now={now} />}
+      {supportable && <SupportPanel r={r} chart={chart} now={now} personId={personId} />}
 
       <details className="mt-3 text-xs text-muted">
         <summary className="cursor-pointer">Rule and source</summary>
@@ -273,7 +273,7 @@ function InstanceBlock({ inst }: { inst: Instance }) {
   );
 }
 
-function SupportPanel({ r, chart, now }: { r: YogaResult; chart: ChartResult; now: Date }) {
+function SupportPanel({ r, chart, now, personId }: { r: YogaResult; chart: ChartResult; now: Date; personId: string }) {
   const tz = chart.input.ianaTz;
   const planets = [...new Set(r.instances.flatMap((i) => i.planets))] as Planet[];
   const houses = [...new Set(r.instances.flatMap((i) => i.houses))].sort((a, b) => a - b);
@@ -351,7 +351,8 @@ function SupportPanel({ r, chart, now }: { r: YogaResult; chart: ChartResult; no
         <div>
           <p className="font-semibold">3 · Traditional remedies</p>
           <p className="text-ink-soft">
-            The sourced remedy catalogue (mantra, daan, puja, gemstone reasoning) is the next module. Nothing is suggested here until each remedy has a source, cost and safety notes.
+            Mantra, service, daan and gemstone reasoning for {planets.length ? planets.join(", ") : "each planet"} are on the{" "}
+            <Link href={`/remedies?p=${personId}`} className="font-semibold text-gold underline-offset-4 hover:underline">Remedies &amp; Rituals</Link> page, free practices first.
           </p>
         </div>
 

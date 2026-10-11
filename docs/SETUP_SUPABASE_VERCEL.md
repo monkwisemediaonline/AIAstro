@@ -16,7 +16,9 @@ Follow these steps once to put it online privately.
 1. Create a project (region **ap-south-1 Mumbai**). Save the database password in a password manager.
 2. **Authentication → Sign In / Providers → Email**: keep Email enabled, **turn OFF "Allow new users to sign up"**.
 3. **Authentication → Users → Add user → Create new user**: your email + a strong password, tick "Auto confirm".
-4. **SQL Editor**: paste and run `supabase/migrations/20261010000000_init.sql`.
+4. **SQL Editor**: paste and run each file in `supabase/migrations/` in date order
+   (`20261010000000_init.sql`, then `20261011000000_remedies.sql`). Run any new migration file
+   added later the same way.
 5. Make yourself the owner (SQL Editor):
    ```sql
    insert into public.app_owner (user_id)

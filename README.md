@@ -12,11 +12,17 @@ Next.js 16 · Supabase (Postgres + Auth, owner-only RLS) · Vercel.
   signs, Vimshottari Dasha (MD/AD/PD).
 - **Birth-time sensitivity** — range births are calculated every 4 minutes across the window and
   show which results change; unknown times give a Moon chart with warnings.
+- **Raj & Dhana Yoga** — 27 Parashari rules with conditions met/not met, evidence, a labelled strength
+  heuristic, Dasha timing and practical actions. All rules are drafts awaiting source verification.
+- **Numerology** — Chaldean, Pythagorean and Indian (Mulank, Bhagyank, Lo Shu, personal year); phone and
+  other numbers; a name-change lab. Every letter value and step is shown.
+- **Remedies & Rituals** — per-planet starter practices (free first), gemstone reasoning by lordship,
+  japa counter and daan log with a monthly cap.
 - **Partner Vibes** — business-partner comparison, seven factors each labelled by basis.
 - Owner-only login (Supabase), no public sign-up.
 
-Planned next (see `docs/IMPLEMENTATION_PLAN.md`): Raj/Dhana Yoga engine, transits, full
-numerology, remedies planner, Lal Kitab, AI assistant.
+Planned next (see `docs/IMPLEMENTATION_PLAN.md`): transits, business & wealth dashboard, Lal Kitab,
+research library, AI assistant.
 
 ## Run locally
 ```bash

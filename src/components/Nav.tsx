@@ -7,15 +7,15 @@ const LIVE = [
   { href: "/", label: "Overview" },
   { href: "/people/new", label: "Add birth details" },
   { href: "/yoga", label: "Raj & Dhana Yoga" },
+  { href: "/numerology", label: "Numerology" },
+  { href: "/remedies", label: "Remedies & Rituals" },
   { href: "/partner", label: "Partner Vibes" },
 ];
 
 const SOON = [
   "Dasha & Transits",
   "Business & Wealth",
-  "Numerology",
   "Lal Kitab",
-  "Remedies & Rituals",
   "Research Library",
   "AI Assistant",
 ];
